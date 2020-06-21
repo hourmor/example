@@ -31,4 +31,4 @@ func RequestIncrease() {
 
 Exporter在原有的latency & requestCount指标基础上增加了1个指标bandwidth_rate，metrics类型为Gauge。
 
-bandwidth_rate 表示服务器带宽可利用率。服务器的使用明显存在高峰期&低峰期。使用时间来模拟，使用抛物线进行模拟，高峰期在20点到21点间，默认这段时间利用率100%.
+bandwidth_rate 表示服务器带宽可利用率。服务器的使用明显存在高峰期&低峰期。时间为自变量，使用抛物线进行模拟，高峰期在20点到21点间，默认这段时间利用率100%.
