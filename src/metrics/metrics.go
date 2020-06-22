@@ -2,6 +2,9 @@ package metrics
 
 import (
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/disk"
+	"github.com/shirou/gopsutil/mem"
 	"time"
 )
 
@@ -21,10 +24,29 @@ var (
 		}, []string{},
 	)
 	//服务器带宽可利用率
-	bandwidth_rate := prometheus.NewGauge(prometheus.GaugeOpts{
+	bandwidth_rate = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name:      "bandwidth_rate",
 		Help:      "rate of bandwidth lefted",
 	})
+	// CPU 利用率
+	cpu_rate = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+		Name:      "cpu_rate",
+		Help:      "rate of cpu percent used.",
+	})
+	// disk 利用率
+	dis_rate = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+		Name:      "dis_rate",
+		Help:      "rate of disk memory used.",
+	})	
+	// memory 利用率
+	mem_rate = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+		Name:      "mem_rate",
+		Help:      "rate of system memory used.",
+	})
+
 )
 
 // AdmissionLatency measures latency / execution time of Admission Control execution
@@ -38,6 +60,10 @@ func Register() {
 	prometheus.MustRegister(requestCount)
 	prometheus.MustRegister(requestLatency)
 	prometheus.MustRegister(bandwidth_rate)
+	prometheus.MustRegister(cpu_rate)
+	prometheus.MustRegister(dis_rate)
+	prometheus.MustRegister(mem_rate)
+
 }
 
 
@@ -62,7 +88,18 @@ func RequestIncrease() {
 	h:=time.Now().Hour()
 	hour:=float64(h)
 	//范围映射为0~23 -> [0,200]
-	bandwithleft=(hour - 20) * (hour - 20) / 2
+	bandwithleft:=(hour - 20) * (hour - 20) / 2
 	//在[20:00,21:00)这段时间可利用率为0%
 	bandwidth_rate.Set(bandwithleft/200)
+
+	mem_,_ :=mem.VirtualMemory()
+	mem_rate.Set(mem_.UsedPercent)
+	
+	cpuper, _:= cpu.Percent(time.Second, false)
+	cpu_rate.Set(cpuper[0])
+
+	parts, _ := disk.Partitions(true)
+	diskInfo, _ := disk.Usage(parts[0].Mountpoint)
+	dis_rate.Set(diskInfo.UsedPercent)
+
 }

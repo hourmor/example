@@ -68,21 +68,41 @@ https://time.geekbang.org/column/article/72281
 
 所有pod正常运行
 
-![](img/2.png)
+![](img/24.png)
 
 example-service 正常执行&&获取metrics
 
-![](img/9.png)
+![](img/25.png)
 
 获取网络配置信息
 
 ![](img/7.png)
 
-获知Prometheus开放的端口
-
-![](img/5.png)
-
 打开网页进行访问
 
-![](img/4.png)
+这里发现实际上filter并没有筛选出关键字。打开发现是example-service在prometheus target对应状态为down。
+
+
+
+![](img/22.png)
+
+![](img/21.png)
+
+查找资料。说是config文件配置出错，原因可能有如下
+
+```
+    scrape_interval: 5m
+    scrape_timeout: 1m
+    
+-----
+
+ tls_config:
+      insecure_skip_verify: true
+```
+
+但我都试了，发现并没有如期生效，仍不知道是哪里出现了问题。心累，故放弃。
+
+https://stackoverflow.com/questions/49817558/context-deadline-exceeded-prometheus
+
+https://github.com/prometheus/prometheus/issues/2459
 
