@@ -106,3 +106,23 @@ https://stackoverflow.com/questions/49817558/context-deadline-exceeded-prometheu
 
 https://github.com/prometheus/prometheus/issues/2459
 
+————————————————————————————————————————————
+
+UPDATE
+
+按照群里zzy同学得建议：
+
+直接用 ./src/flannel.yaml 依次执行下列命令：
+
+```
+kubectl delete -f flannel.yaml
+kubectl apply -f flannel.yaml
+#####上面得命令更新得是kube-system kube-flannel 
+kubectl scale deployment prometheus --replicas=0
+kubectl scale deployment prometheus --replicas=1
+```
+
+即可解决
+
+![](img/27.png)
+
